@@ -7,7 +7,7 @@ class CPBandit(Bandit):
             self,
             sec_len: List[int],
             sec_means: List[float],
-            sampling_type: str = 'gaussian',
+            sampling_type: Optional[str] = 'gaussian',
             parameter: Optional[float] = 1.0
     ) -> None:
         self.sec_len = sec_len
@@ -58,6 +58,7 @@ class CPBandit(Bandit):
     def sequential_halving(
             self,
             budget: int,
+            cplist = [],
             left: Optional[int] = None,
             right: Optional[int] = None,
             grid_dist: Optional[int] = 1
@@ -66,15 +67,35 @@ class CPBandit(Bandit):
         right = self.num_arms - 1 if right is None else right
 
         section_length = right - left + 1
-        if grid_dist < 1 or grid_dist >= section_length:
-            raise ValueError("grid_dist must be at least 1 and smaller than the section length")
+        if grid_dist < 1 or grid_dist >= section_length - len(cplist):
+            raise ValueError("grid_dist must be at least 1 and smaller than the section length minus given change points")
+        
+        for i in range(len(cplist)-1):
+            if cplist[i+1] <= cplist[i]:
+                raise ValueError("detected change points must be given in strictly increasing order")
+        
+        if len(cplist) > 0:
+            if cplist[0] <= left or cplist[-1] >= right:
+                raise ValueError("detected change points must be within (left, right)")
+        
+        cplist = [left] + cplist + [right]
         
 
-        grid_points = [left + grid_dist]
-        while grid_points[-1] + grid_dist <= right:
-            grid_points.append(grid_points[-1] + grid_dist)
+        i = left
+        j = left
+        grid_points = []
+        while j < right:
+            if j not in cplist:
+                i += 1
+                if i % grid_dist == 0:
+                    grid_points.append(j)
+            j += 1
+
         
         grid_size = len(grid_points)
+        if grid_size == 1:
+            return grid_points[0]
+
         depth = int(np.ceil(np.log2(grid_size)))
         
         if budget / ( 2* depth * grid_size) < 1:
@@ -83,8 +104,11 @@ class CPBandit(Bandit):
         for i in range(depth):
             num_sample = int(2**i * budget / ( 2* depth * grid_size) )
             diffs = []
+            pointer = 0
             for gp in grid_points:
-                diffs.append(- abs( np.mean(self.pull(gp, num_sample)) - np.mean(self.pull(left, num_sample))))
+                while cplist[pointer + 1] < gp:
+                    pointer += 1
+                diffs.append(- abs( np.mean(self.pull(gp, num_sample)) - np.mean(self.pull(cplist[pointer], num_sample))))
             index_sort = np.argsort(diffs)
             grid_points = [grid_points[index_sort[j]] for j in range(2**(depth -i -1))]
         

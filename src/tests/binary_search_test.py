@@ -4,7 +4,7 @@ from src.models.cp_bandit import CPBandit
 def test_binary_search_multiple_scenarios():
     # Define test scenarios
     scenarios = [
-        {"means": [0, 1], "lengths": [5, 5], "name": "Positive jump, equal lengths"},
+        {"means": [0, 1], "lengths": [9, 1], "name": "Positive jump, equal lengths"},
         {"means": [0, -1], "lengths": [5, 5], "name": "Negative jump, equal lengths"},
         {"means": [0, 1], "lengths": [4, 6], "name": "Positive jump, unequal lengths"},
         {"means": [0, -1], "lengths": [4, 6], "name": "Negative jump, unequal lengths"}
@@ -22,7 +22,7 @@ def test_binary_search_multiple_scenarios():
         )
         
         # Apply binary search
-        estimated_cp = bandit.bin_search(budget, left = 2, right = 8)
+        estimated_cp = bandit.bin_search(budget)
         true_cp = bandit.change_points[0]  # First changepoint
         
         # Print results

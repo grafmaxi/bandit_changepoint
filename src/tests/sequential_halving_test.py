@@ -4,10 +4,10 @@ from src.models.cp_bandit import CPBandit
 def test_binary_search_multiple_scenarios():
     # Define test scenarios
     scenarios = [
-        {"means": [0, 1, 0], "lengths": [5, 1, 4], "name": "Positive jump, equal lengths"}
+        {"means": [0, -3, 2, 0], "lengths": [4, 1, 2, 3], "detected": [4,7],  "name": "One jump, short second plateau"}
     ]
     
-    budget = 100
+    budget = 1000
     
     for scenario in scenarios:
         # Create CPBandit
@@ -15,11 +15,11 @@ def test_binary_search_multiple_scenarios():
             sec_means=scenario["means"],
             sec_len=scenario["lengths"],
             sampling_type='gaussian',
-            parameter=0.1
+            parameter=1 
         )
         
         # Apply binary search
-        estimated_ba = bandit.sequential_halving(budget)
+        estimated_ba = bandit.sequential_halving(budget, cplist=scenario["detected"])
         
         # Print results
         print(f"\nScenario: {scenario['name']}")

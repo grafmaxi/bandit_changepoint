@@ -6,7 +6,7 @@ class Bandit:
     def __init__(
             self,
             arms: List[float],
-            sampling_type: str = "gaussian",
+            sampling_type: Optional[str] = "gaussian",
             parameter: Optional[float] = 1.0
     ) -> None:
         """ Initialize a basic bandit.
