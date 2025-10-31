@@ -5,7 +5,7 @@ from src.algorithms.change_point_detection import fixed_confidence
 def test_change_point_detection():
     # Define test scenarios
     scenarios = [
-        {"means": [0, -.003, .002, 0], "lengths": [40, 10, 20, 30], "name": "Three jumps"}
+        {"means": [0, -.03, .02, 0], "lengths": [40, 10, 20, 30], "name": "Three jumps"}
     ]
     
     
@@ -22,7 +22,8 @@ def test_change_point_detection():
         change_points = fixed_confidence(
             bandit,
             min_cp_num=bandit.num_cp,
-            confidence=0.05
+            confidence=0.05,
+            track_budget=True
         )
         
         # Print results

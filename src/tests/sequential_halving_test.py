@@ -19,10 +19,11 @@ def test_binary_search_multiple_scenarios():
         )
         
         # Apply binary search
-        estimated_ba = bandit.sequential_halving(budget, cplist=scenario["detected"])
+        estimated_ba, spent_budget = bandit.sequential_halving(budget, cplist=scenario["detected"], track_budget=True)
         
         # Print results
         print(f"\nScenario: {scenario['name']}")
         print(f"Estimated best arm: {estimated_ba}")
+        print(f"Spent budget: {spent_budget}")
 if __name__ == "__main__":
     test_binary_search_multiple_scenarios()

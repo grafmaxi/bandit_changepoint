@@ -32,8 +32,10 @@ class CPBandit(Bandit):
             self,
             budget: int,
             left: Optional[int] = None,
-            right: Optional[int] = None
-    ) -> int:
+            right: Optional[int] = None,
+            track_budget: bool = False
+    ) -> int | tuple[int, int]:
+        spent_budget = 0
         left = 0 if left is None else left
         right = self.num_arms - 1 if right is None else right
 
@@ -48,12 +50,16 @@ class CPBandit(Bandit):
             left_mean = np.mean(self.pull(left, step_budget))
             mid_mean = np.mean(self.pull(mid, step_budget))
             right_mean = np.mean(self.pull(right, step_budget))
+            spent_budget += 3 * step_budget
             if abs(left_mean - mid_mean) > abs(right_mean - mid_mean):
                 right = mid
             else:
                 left = mid
             mid = left + int((right - left) / 2)
-        return right
+        if track_budget:
+            return right, spent_budget
+        else:
+            return right
     
     def sequential_halving(
             self,
@@ -61,8 +67,10 @@ class CPBandit(Bandit):
             cplist = [],
             left: Optional[int] = None,
             right: Optional[int] = None,
-            grid_dist: Optional[int] = 1
-            ) -> int:
+            grid_dist: Optional[int] = 1,
+            track_budget: bool = False
+            ) -> int | tuple[int, int]:
+        spent_budget = 0
         left = 0 if left is None else left
         right = self.num_arms - 1 if right is None else right
 
@@ -94,7 +102,10 @@ class CPBandit(Bandit):
         
         grid_size = len(grid_points)
         if grid_size == 1:
-            return grid_points[0]
+            if track_budget:
+                return grid_points[0], spent_budget
+            else:
+                return grid_points[0]
 
         depth = int(np.ceil(np.log2(grid_size)))
         
@@ -109,17 +120,21 @@ class CPBandit(Bandit):
                 while cplist[pointer + 1] < gp:
                     pointer += 1
                 diffs.append(- abs( np.mean(self.pull(gp, num_sample)) - np.mean(self.pull(cplist[pointer], num_sample))))
+                spent_budget += 2 * num_sample
             index_sort = np.argsort(diffs)
             grid_points = [grid_points[index_sort[j]] for j in range(2**(depth -i -1))]
-        
-        return grid_points[0] 
+        if track_budget:
+            return grid_points[0], spent_budget
+        else:
+            return grid_points[0] 
     
     def calculate_mean_difference(
             self,
             budget: int,
             i: int,
-            j: Optional[int] = None
-                         ) -> float:
+            j: Optional[int] = None,
+            track_budget: Optional[bool] = False
+                         ) -> float | tuple[float, int]:
         if j is None:
             if i == 0:
                 raise ValueError("j must be provided when i is 0")
@@ -128,13 +143,21 @@ class CPBandit(Bandit):
             raise ValueError("Budget must be at least 2")
         imean = np.mean(self.pull(i, budget // 2))
         jmean = np.mean(self.pull(j, budget // 2))
-        return imean - jmean
+        if track_budget:
+            return [imean - jmean, budget - budget % 2]
+        else:
+            return imean - jmean
 
     def test_differences(
             self,
             budget: int,
-            threshold: float,
+            threshold: float, 
             i: int,
-            j: Optional[int] = None
-                         ) -> bool:
-        return abs( self.calculate_mean_difference(budget, i, j) ) > threshold
+            j: Optional[int] = None,
+            track_budget: bool = False
+                         ) -> bool | tuple[bool, int]:
+        if track_budget:
+            diff, used_budget = self.calculate_mean_difference(budget, i, j, track_budget=True)
+            return [abs(diff) > threshold, used_budget]
+        else:   
+            return abs( self.calculate_mean_difference(budget, i, j) ) > threshold
