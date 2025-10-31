@@ -5,7 +5,7 @@ from src.algorithms.change_point_detection import fixed_confidence
 def test_change_point_detection():
     # Define test scenarios
     scenarios = [
-        {"means": [0, -3, 2, 0], "lengths": [40, 10, 20, 30], "name": "Three jumps"}
+        {"means": [0, -.003, .002, 0], "lengths": [40, 10, 20, 30], "name": "Three jumps"}
     ]
     
     

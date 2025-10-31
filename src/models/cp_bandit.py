@@ -114,13 +114,12 @@ class CPBandit(Bandit):
         
         return grid_points[0] 
     
-    def test_differences(
+    def calculate_mean_difference(
             self,
             budget: int,
-            threshold: float,
             i: int,
             j: Optional[int] = None
-                         ) -> bool:
+                         ) -> float:
         if j is None:
             if i == 0:
                 raise ValueError("j must be provided when i is 0")
@@ -129,4 +128,13 @@ class CPBandit(Bandit):
             raise ValueError("Budget must be at least 2")
         imean = np.mean(self.pull(i, budget // 2))
         jmean = np.mean(self.pull(j, budget // 2))
-        return abs(imean - jmean) > threshold
+        return imean - jmean
+
+    def test_differences(
+            self,
+            budget: int,
+            threshold: float,
+            i: int,
+            j: Optional[int] = None
+                         ) -> bool:
+        return abs( self.calculate_mean_difference(budget, i, j) ) > threshold
