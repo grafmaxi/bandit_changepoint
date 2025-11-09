@@ -22,12 +22,15 @@ def test_change_point_detection():
         change_points = fixed_confidence(
             bandit,
             min_cp_num=bandit.num_cp,
-            confidence=0.05,
+            confidence=0.2,
             track_budget=True
         )
         
         # Print results
         print(f"\nScenario: {scenario['name']}")
         print(f"Estimated change_points: {change_points}")
-if __name__ == "__main__":
-    test_change_point_detection()
+if __name__ == "__main__":    
+    for i in range(1000):
+        np.random.seed(i)
+        print(i)
+        test_change_point_detection()
