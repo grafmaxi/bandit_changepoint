@@ -7,7 +7,7 @@ def test_change_point_detection():
     precision = 0.1
     confidence = 0.1
     cplist = [0.2, 0.5, 0.7]
-    values = [0.2, 0.8, 0.3, 0.9]
+    values = [0.02, 0.08, 0.03, 0.09]
     bandit = Continuous_Bandit(change_points=cplist, values=values, sampling_type="gaussian", parameter=1)
     num_cp = len(cplist)   
 
@@ -15,7 +15,7 @@ def test_change_point_detection():
     return detected_cplist, tracked_budget
 
 if __name__ == "__main__":
-    num_tests = 100
+    num_tests = 10
     for i in range(num_tests):
         np.random.seed(i)
         detected_cplist, tracked_budget = test_change_point_detection()

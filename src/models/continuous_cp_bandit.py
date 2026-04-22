@@ -1,6 +1,7 @@
 from typing import List, Optional, Union
 import numpy as np # type: ignore
 from numpy.typing import NDArray
+from .bandit import Bandit
 
 class Continuous_Bandit:
     def __init__(
@@ -36,6 +37,15 @@ class Continuous_Bandit:
             raise ValueError("Parameter must be a positive float for gaussian sampling.")
         if sampling_type == "bernoulli" and (any(arm < 0 or arm > 1 for arm in arms)):
             raise ValueError("All arm means must be in [0, 1] for bernoulli sampling.")
+        
+    def discrete_transform(
+            self,
+            precision: float
+            ):
+        num_arms = int(1 / precision)
+        arms = range(num_arms)
+        arm_means = [self.value_at(x * precision) for x in arms]
+        return Bandit(arms = arm_means , sampling_type = self.sampling_type, parameter = self.parameter)
 
     def value_at(self, x: float) -> float:
         """Get the value of the bandit at position x based on change points."""

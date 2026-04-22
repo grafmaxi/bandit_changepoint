@@ -1,11 +1,12 @@
 import numpy as np
 from src.models.cp_bandit import CPBandit
-from src.algorithms.change_point_detection import fixed_confidence
+from src.algorithms.scp_track_and_stop import scp_track_and_stop
+from src.algorithms.mcp_track_and_stop import mcp_track_and_stop
 
 def test_change_point_detection():
     # Define test scenarios
     scenarios = [
-        {"means": [0, -.03, .02, 0], "lengths": [40, 10, 20, 30], "name": "Three jumps"}
+        {"means": [0, 1, 0], "lengths": [90, 2, 90], "name": 'single jump'}
     ]
     
     
@@ -19,18 +20,16 @@ def test_change_point_detection():
         )
         
         # Apply binary search
-        change_points = fixed_confidence(
-            bandit,
-            min_cp_num=bandit.num_cp,
-            confidence=0.2,
-            track_budget=True
-        )
+        [change_points, budget] = mcp_track_and_stop(bandit, delta=0.1, num_find=2)  # Get estimated change point
         
         # Print results
-        print(f"\nScenario: {scenario['name']}")
+        # print(f"\nScenario: {scenario['single jump']}")
+        true_change_points = bandit.change_points  # Get true change point from bandit
+        print(f"True change_points: {true_change_points}")
         print(f"Estimated change_points: {change_points}")
+        print(f"Budget used: {budget}")
 if __name__ == "__main__":    
-    for i in range(1000):
+    for i in range(10):
         np.random.seed(i)
         print(i)
         test_change_point_detection()

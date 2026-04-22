@@ -1,6 +1,7 @@
 from typing import List, Optional
 from .bandit import Bandit
 import numpy as np # type: ignore
+from .continuous_cp_bandit import Continuous_Bandit
 
 class CPBandit(Bandit):
     def __init__(
@@ -22,7 +23,7 @@ class CPBandit(Bandit):
         self.change_points = []
         self.differences = []
         for i in range(self.num_cp):
-            cp_index = sum(sec_len[:i+1])
+            cp_index = sum(sec_len[:i+1]) - 1
             self.change_points.append(cp_index)
             self.differences.append(sec_means[i+1] - sec_means[i])
 
@@ -60,6 +61,20 @@ class CPBandit(Bandit):
             return right, spent_budget
         else:
             return right
+        
+    def continuous_transform(
+            self
+    ):
+      change_points_continuous = []
+      for cp in self.change_points:
+        change_points_continuous.append( (cp +1 ) / self.num_arms + 1 / (2*self.num_arms))
+        return Continuous_Bandit(
+        change_points = change_points_continuous,
+            values = self.sec_means,
+            sampling_type = self.sampling_type,
+            parameter = self.parameter
+        )
+
     
     def sequential_halving(
             self,
