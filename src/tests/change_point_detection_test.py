@@ -6,7 +6,7 @@ from src.algorithms.mcp_track_and_stop import mcp_track_and_stop
 def test_change_point_detection():
     # Define test scenarios
     scenarios = [
-        {"means": [0, 1, 0], "lengths": [90, 2, 90], "name": 'single jump'}
+        {"means": [0, 1, 0], "lengths": [900, 2, 900], "name": 'single jump'}
     ]
     
     
