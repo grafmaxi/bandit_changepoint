@@ -19,13 +19,18 @@ def shb(
         bandit,
         budget: int,
         precision: float,
-        left = 0.0,        
-        right = 1.0,
+        interval = (0, 1),
         track_budget = False
 ) :
+    left, right = interval
+    if right - left <= 2*precision:
+        if track_budget:
+            return (left + right) / 2, 0
+        else:
+            return (left + right) / 2
     root = tree_node(left, left, (left + right) / 2, right, right)
-    num_steps = int(np.ceil(6*np.log(1/(2*precision))))
-    step_budget = int(budget/int(np.ceil(6*np.log(1/(2*precision)))))
+    num_steps = int(np.ceil(6*np.log(1/precision)))
+    step_budget = int(budget/5*num_steps)
     tracked_budget = 0
     history = [root]
     for i in range(num_steps):
