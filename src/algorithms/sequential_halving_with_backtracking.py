@@ -30,8 +30,10 @@ def shb(
             return (left + right) / 2
     root = tree_node(left, left, (left + right) / 2, right, right)
     num_steps = int(np.ceil(6*np.log(1/precision)))
-    step_budget = int(budget/5*num_steps)
+    step_budget = int(budget/(5*num_steps))
     tracked_budget = 0
+    if step_budget == 0:
+        return (left + right) / 2, 0
     history = [root]
     for i in range(num_steps):
         if step_budget == 1:

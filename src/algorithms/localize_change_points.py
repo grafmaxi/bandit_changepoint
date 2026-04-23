@@ -7,13 +7,19 @@ def localize_change_points(bandit, num_cps, delta, delta_explore, precision):
     cps = []
     k = int(np.ceil(np.log2(num_cps)))
     tracked_budget = 0
+    tracked_detection_budget = 0
+    tracked_estimation_budget = 0
+    tracked_localization_budget = 0
+    tracked_verification_budget = 0
     while True:
         delta_verify = 3*delta/(2*np.pi**2*k**2*num_cps)
         intervals, step_budget = detect_intervals(bandit, delta_explore/4, 2**k)
         tracked_budget += step_budget
+        tracked_detection_budget += step_budget
         if len(intervals) >= num_cps:
             estimates, step_budget = estimate_jumps(bandit, intervals, delta_explore/4, 2**k, num_cps)
             tracked_budget += step_budget
+            tracked_estimation_budget += step_budget
             if len(estimates) >= num_cps:
                 s = np.sum(np.array(list(estimates.values()))**(-2))
                 verify = True
@@ -23,15 +29,17 @@ def localize_change_points(bandit, num_cps, delta, delta_explore, precision):
                     cp, step_budget = shb(bandit, t_step, precision, interval, track_budget=True)
                     cps.append(cp)
                     tracked_budget += step_budget
+                    tracked_localization_budget += step_budget
                     if interval[1] - interval[0] > 2 * precision:
                         left = max(interval[0], cp - precision)
                         right = min(interval[1], cp + precision)
                         verify, step_budget = verify_change_point(bandit, left, right, delta_verify, t_step)
                         tracked_budget += step_budget
+                        tracked_verification_budget += step_budget
                         if not verify:
                             break
                 if verify:
-                    return np.sort(cps), tracked_budget
+                    return np.sort(cps), tracked_budget, tracked_detection_budget, tracked_estimation_budget, tracked_localization_budget, tracked_verification_budget
         cps = []
         k += 1
 

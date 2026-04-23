@@ -7,8 +7,9 @@ from src.algorithms.mcp_track_and_stop import mcp_track_and_stop
 
 def test_change_point_detection_discrete():
     # Define test scenarios
+    k = 2000
     scenarios = [
-        {"means": [0, 1, 0], "lengths": [900, 2, 900], "name": 'single jump'}
+        {"means": [0, 1, 0, 1, 0, 1], "lengths": [k,k,k,k,k,k], "name": 'equidistant jumps'}
     ]
     
     
@@ -22,7 +23,7 @@ def test_change_point_detection_discrete():
         )
         
         # Apply binary search
-        [change_points, budget] = mcp_track_and_stop(bandit, delta=0.1, num_find=2)  # Get estimated change point
+        [change_points, budget] = mcp_track_and_stop(bandit, delta=0.2, num_find=5)  # Get estimated change point
         
         # Print results
         # print(f"\nScenario: {scenario['single jump']}")
@@ -34,7 +35,7 @@ def test_change_point_detection_discrete():
 def test_change_point_detection_continuous():
     # Define test scenarios
     scenarios = [
-        {"change_points": [0.1, np.pi/10, 0.55, 0.8, 0.9], "values": [0, 1, 0, 1, 0, 1], "name": 'multiple jumps'}
+        {"change_points": [0.1, .3, .5, 0.7, 0.9], "values": [0, 1, 0, 1, 0, 1], "name": 'multiple jumps'}
     ]
     
     for scenario in scenarios:
@@ -47,7 +48,7 @@ def test_change_point_detection_continuous():
         )
         
         # Apply localize change points
-        [change_points, budget] = localize_change_points(bandit, num_cps=5, delta=0.3, delta_explore=0.3, precision=0.01)
+        [change_points, budget] = localize_change_points(bandit, num_cps=5, delta=0.2, delta_explore=0.5, precision=0.0001)
         
         # Print results
         # print(f"\nScenario: {scenario['name']}")
@@ -62,3 +63,4 @@ if __name__ == "__main__":
         np.random.seed(i)
         print(i)
         test_change_point_detection_continuous()
+        test_change_point_detection_discrete()
