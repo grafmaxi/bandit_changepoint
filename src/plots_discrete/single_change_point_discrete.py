@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 import matplotlib.pyplot as plt # type: ignore
 
-results_dir = Path(__file__).resolve().parents[1] / "results"
+results_dir = Path(__file__).resolve().parents[1] / "results_discrete"
 
 # Backtracking CPs
 with open(results_dir / "scpd_backtracking_cps.csv", 'r') as f:

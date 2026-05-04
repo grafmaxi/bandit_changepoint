@@ -72,6 +72,7 @@ def mcp_track_and_stop(bandit: CPBandit, delta: float, num_find: int = 1, update
                         xhat = a-1
                 t += 1
             else:
+                still_exploring = False
                 # Sample the arm with the least number of pulls among the two arms corresponding to xhat
                 if num_vec[xhat] <= num_vec[xhat+1]:
                     a = xhat
@@ -84,11 +85,11 @@ def mcp_track_and_stop(bandit: CPBandit, delta: float, num_find: int = 1, update
                 if a < num_arms - 1 and mask[a]:
                     diff_vec[a] = abs(mean_vec[a] - mean_vec[a+1])
                     if (not update) and diff_vec[a] > diff_vec[xhat]:
-                        xhat = a
+                        xhat = np.argmax(diff_vec)
                 if a > 0 and mask[a-1]:
                     diff_vec[a-1] = abs(mean_vec[a] - mean_vec[a-1])
                     if (not update) and diff_vec[a-1] > diff_vec[xhat]:
-                        xhat = a-1
+                        xhat = np.argmax(diff_vec)
                 t += 1
             # Update the test statistic z, the threshold beta and the parameter r for the update condition
             z = (num_vec[xhat] * num_vec[xhat+1]) / (2*(num_vec[xhat] + num_vec[xhat+1])) * (mean_vec[xhat] - mean_vec[xhat+1])**2

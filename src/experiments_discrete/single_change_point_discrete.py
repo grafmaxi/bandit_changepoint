@@ -87,7 +87,7 @@ if __name__ == "__main__":
     backtracking_cps, backtracking_budgets, cspi_cps, cspi_budgets, num_arm_list = run_single_change_point_discrete_experiment()
     
     # Pfad zum results Ordner
-    results_dir = Path(__file__).resolve().parents[1] / "results"
+    results_dir = Path(__file__).resolve().parents[1] / "results_discrete"
     results_dir.mkdir(exist_ok=True)  # Ordner erstellen falls nicht vorhanden
     
     # Header: Spaltennamen sind die Anzahl der Arms

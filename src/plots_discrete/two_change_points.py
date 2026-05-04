@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-RESULTS_DIR = Path(__file__).resolve().parent.parent / "results"
+RESULTS_DIR = Path(__file__).resolve().parent.parent / "results_discrete"
 # ---------- Load data ----------
 df_discrete = pd.read_csv(RESULTS_DIR / "results_discrete.csv")
 df_continuous = pd.read_csv(RESULTS_DIR / "results_continuous.csv")

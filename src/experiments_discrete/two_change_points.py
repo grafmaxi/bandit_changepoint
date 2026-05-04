@@ -15,16 +15,16 @@ from src.algorithms.mcp_track_and_stop import mcp_track_and_stop
 from src.models.cp_bandit import CPBandit
 from src.models.continuous_cp_bandit import Continuous_Bandit
 
-RESULTS_DIR = Path(__file__).resolve().parent.parent / "results"
+RESULTS_DIR = Path(__file__).resolve().parent.parent / "results_discrete"
 
 # ---------- Configuration ----------
-num_mc = 8
+num_mc = 1000
 num_workers = 4
-num_arms = 2**10
-jump_size = 0.5
+num_arms = 2**13
+jump_size = 4
 precision = 1 / (2 * num_arms)
-delta = 0.2
-delta_explore = 0.5
+delta = 0.05
+delta_explore = 1
 
 k_values = list(range(int(np.log2(num_arms / 2))))
 
