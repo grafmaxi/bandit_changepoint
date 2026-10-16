@@ -1,7 +1,11 @@
+"""
+Smoke test for detect_intervals and estimate_jumps: prints results without checking them.
+"""
+
 from src.algorithms.detect_intervals import detect_intervals
 from src.algorithms.estimate_jumps import estimate_jumps
 from src.models.continuous_cp_bandit import Continuous_Bandit
-import numpy as np # type: ignore
+import numpy as np
 
 
 def test_detect_intervals():

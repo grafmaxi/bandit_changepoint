@@ -1,3 +1,8 @@
+"""
+Experiment 4 (Figure 3): one change point with varying confidence level delta.
+Compares LCP with SCPI. Output: two CSVs for later plot creation.
+"""
+
 from multiprocessing import Pool
 import numpy as np
 import pandas as pd
@@ -24,7 +29,7 @@ delta_values = [np.exp(-x) for x in log_inv_delta_values]
 
 
 # ---------- Worker ----------
-def two_change_points(i):
+def one_change_point(i):
     """Run all delta values for a single MC run (continuous + discrete)."""
     np.random.seed(i)
     continuous_cp = np.random.uniform(0, 1)
@@ -125,7 +130,7 @@ if __name__ == "__main__":
     start_time = time.time()
     with Pool(num_workers) as pool:
         for c_rows, d_rows in tqdm(
-            pool.imap_unordered(two_change_points, range(num_mc)),
+            pool.imap_unordered(one_change_point, range(num_mc)),
             total=num_mc,
             desc="MC runs",
         ):

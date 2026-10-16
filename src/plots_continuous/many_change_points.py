@@ -1,6 +1,6 @@
 """
-Plot mean budget against log(1/delta) for the many-change-points experiment,
-with one curve per (precision, method) combination.
+Figure 4: plot mean budget against log(1/delta) for the many-change-points
+experiment, with one curve per (precision, method) combination.
 """
 
 from pathlib import Path
@@ -14,16 +14,24 @@ df_discrete = pd.read_csv(RESULTS_DIR / "many_cps_results_discrete.csv")
 df_continuous = pd.read_csv(RESULTS_DIR / "many_cps_results_continuous.csv")
 fig, ax = plt.subplots(figsize=(5, 3))
 precisions = sorted(df_discrete['precision'].unique(), reverse=True)
-print(precisions)
 cmap = plt.cm.viridis
 colors = [cmap(i / max(len(precisions) - 1, 1)) for i in range(len(precisions))]
 
 continuous_handles = []
 discrete_handles = []
+total_lcp = df_continuous['runtime'].sum() if 'runtime' in df_continuous.columns else 0
+total_mcpi = df_discrete['runtime'].sum() if 'runtime' in df_discrete.columns else 0
+total_combined = total_lcp + total_mcpi
 
-counter = 1
+print(f"Total runtime LCP (sum across all runs):  {total_lcp:.2f} seconds "
+      f"= {total_lcp/3600:.2f} hours")
+print(f"Total runtime MCPI (sum across all runs): {total_mcpi:.2f} seconds "
+      f"= {total_mcpi/3600:.2f} hours")
+print(f"Total combined runtime:                   {total_combined:.2f} seconds "
+      f"= {total_combined/3600:.2f} hours")
+
+
 for prec, color in zip(precisions, colors):
-    print(prec)
     sub_d = df_discrete[df_discrete['precision'] == prec]
     sub_c = df_continuous[df_continuous['precision'] == prec]
 
@@ -31,7 +39,6 @@ for prec, color in zip(precisions, colors):
     agg_c = sub_c.groupby('log_inv_delta')['budget'].mean()
 
     eta_label = fr'$\eta={prec:.3e}$'
-    counter += 1
 
     line_c, = ax.plot(
         agg_c.index, agg_c.values,
@@ -56,8 +63,6 @@ ordered_labels = [h.get_label() for h in ordered_handles]
 
 ax.set_xlabel(r'$\log(1/\delta)$')
 ax.set_ylabel('Mean budget')
-#ax.set_yscale('log')
-#ax.set_title('Many change points: budget vs. confidence level')
 ax.legend(
     ordered_handles, ordered_labels,
     ncol=2,

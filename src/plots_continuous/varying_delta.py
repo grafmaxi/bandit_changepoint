@@ -1,6 +1,6 @@
 """
-Plot mean budget and deviation against log(1/delta) for the varying-delta
-experiment, comparing discrete (MCPI) and continuous methods.
+Figure 2a: plot mean budget against log(1/delta) for the varying-delta
+experiment, comparing LCP with MCPI.
 """
 
 from pathlib import Path
@@ -14,7 +14,6 @@ df_discrete = pd.read_csv(RESULTS_DIR / "varying_delta_results_discrete.csv")
 df_continuous = pd.read_csv(RESULTS_DIR / "varying_delta_results_continuous.csv")
 
 
-# ---------- Budget ----------
 fig, ax = plt.subplots(figsize=(3, 2.3))
 agg_d = df_discrete.groupby('log_inv_delta')['budget'].agg(
     mean='mean',
@@ -36,7 +35,6 @@ ax.fill_between(agg_d.index, agg_d['q05'], agg_d['q95'], alpha=0.2, color='tab:b
 
 ax.set_xlabel(r'$\log(1/\delta)$')
 ax.set_ylabel('Mean budget')
-#ax.set_title('Varying delta: budget vs. confidence level')
 ax.legend()
 ax.grid(True, which='both', alpha=0.3)
 plt.tight_layout()

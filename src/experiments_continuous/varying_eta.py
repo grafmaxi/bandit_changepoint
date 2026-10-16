@@ -1,3 +1,8 @@
+"""
+Experiment 3 (Figure 2b): two change points with varying precision eta.
+Compares LCP with MCPI. Output: two CSVs for later plot creation.
+"""
+
 from multiprocessing import Pool
 import numpy as np
 import pandas as pd
@@ -24,8 +29,8 @@ delta_explore = 1
 
 
 # ---------- Worker ----------
-def two_change_points(i):
-    """Run all precision values for a single MC run (discrete + continuous)."""
+def varying_eta(i):
+    """Run all precision values for a single MC run (continuous + discrete)."""
     np.random.seed(i)
     continuous_left_pos = np.random.uniform(0, 0.5)
     continuous_right_pos = continuous_left_pos + gap
@@ -124,7 +129,7 @@ def two_change_points(i):
             'runtime': runtime_discrete
         })
 
-    return discrete_rows, continuous_rows
+    return continuous_rows, discrete_rows
 
 
 # ---------- Main ----------
@@ -138,8 +143,8 @@ if __name__ == "__main__":
 
     start_time = time.time()
     with Pool(num_workers) as pool:
-        for d_rows, c_rows in tqdm(
-            pool.imap_unordered(two_change_points, range(num_mc)),
+        for c_rows, d_rows in tqdm(
+            pool.imap_unordered(varying_eta, range(num_mc)),
             total=num_mc,
             desc="MC runs",
         ):

@@ -1,7 +1,10 @@
+"""
+Discrete piecewise-constant bandit, built from section lengths and section means.
+"""
+
 from typing import List, Optional
 from .bandit import Bandit
-import numpy as np # type: ignore
-from .continuous_cp_bandit import Continuous_Bandit
+import numpy as np
 
 class CPBandit(Bandit):
     def __init__(
@@ -11,6 +14,14 @@ class CPBandit(Bandit):
             sampling_type: Optional[str] = 'gaussian',
             parameter: Optional[float] = 1.0
     ) -> None:
+        """Initialize a discrete change point bandit.
+
+        Args:
+            sec_len: Number of arms in each section.
+            sec_means: Mean of each section.
+            sampling_type: distribution from which to sample (gaussian or bernoulli).
+            parameter: standard deviation for gaussian, ignored for bernoulli.
+        """
         self.sec_len = sec_len
         self.sec_means = sec_means
         self.num_cp = len(sec_len) - 1
@@ -36,6 +47,17 @@ class CPBandit(Bandit):
             right: Optional[int] = None,
             track_budget: bool = False
     ) -> int | tuple[int, int]:
+        """Binary search for a single change point between the arms left and right.
+
+        Args:
+            budget: Total sampling budget.
+            left: Leftmost arm of the search range (default: first arm).
+            right: Rightmost arm of the search range (default: last arm).
+            track_budget: Also return the budget spent.
+
+        Returns:
+            Index of the first arm after the estimated jump, and the budget spent if track_budget is True.
+        """
         spent_budget = 0
         left = 0 if left is None else left
         right = self.num_arms - 1 if right is None else right
@@ -61,21 +83,7 @@ class CPBandit(Bandit):
             return right, spent_budget
         else:
             return right
-        
-    def continuous_transform(
-            self
-    ):
-      change_points_continuous = []
-      for cp in self.change_points:
-        change_points_continuous.append( (cp +1 ) / self.num_arms + 1 / (2*self.num_arms))
-        return Continuous_Bandit(
-        change_points = change_points_continuous,
-            values = self.sec_means,
-            sampling_type = self.sampling_type,
-            parameter = self.parameter
-        )
 
-    
     def sequential_halving(
             self,
             budget: int,
@@ -85,6 +93,20 @@ class CPBandit(Bandit):
             grid_dist: Optional[int] = 1,
             track_budget: bool = False
             ) -> int | tuple[int, int]:
+        """Sequential halving over a grid of arms between already detected change points.
+
+        Args:
+            budget: Total sampling budget.
+            cplist: Already detected change points inside (left, right), strictly increasing.
+            left: Leftmost arm of the search range (default: first arm).
+            right: Rightmost arm of the search range (default: last arm).
+            grid_dist: Spacing of the candidate grid.
+            track_budget: Also return the budget spent.
+
+        Returns:
+            Grid arm whose mean differs most from the closest detected change point to its left,
+            and the budget spent if track_budget is True.
+        """
         spent_budget = 0
         left = 0 if left is None else left
         right = self.num_arms - 1 if right is None else right
@@ -141,38 +163,4 @@ class CPBandit(Bandit):
         if track_budget:
             return grid_points[0], spent_budget
         else:
-            return grid_points[0] 
-    
-    def calculate_mean_difference(
-            self,
-            budget: int,
-            i: int,
-            j: Optional[int] = None,
-            track_budget: Optional[bool] = False
-                         ) -> float | tuple[float, int]:
-        if j is None:
-            if i == 0:
-                raise ValueError("j must be provided when i is 0")
-            j = i - 1
-        if budget < 2:
-            raise ValueError("Budget must be at least 2")
-        imean = np.mean(self.pull(i, budget // 2))
-        jmean = np.mean(self.pull(j, budget // 2))
-        if track_budget:
-            return [imean - jmean, budget - budget % 2]
-        else:
-            return imean - jmean
-
-    def test_differences(
-            self,
-            budget: int,
-            threshold: float, 
-            i: int,
-            j: Optional[int] = None,
-            track_budget: bool = False
-                         ) -> bool | tuple[bool, int]:
-        if track_budget:
-            diff, used_budget = self.calculate_mean_difference(budget, i, j, track_budget=True)
-            return [abs(diff) > threshold, used_budget]
-        else:   
-            return abs( self.calculate_mean_difference(budget, i, j) ) > threshold
+            return grid_points[0]

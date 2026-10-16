@@ -1,6 +1,6 @@
 """
-Plot mean budget and deviation against precision for the varying-eta
-experiment, comparing discrete (MCPI) and continuous methods.
+Figure 2b: plot mean budget against precision for the varying-eta
+experiment, comparing LCP with MCPI.
 """
 
 from pathlib import Path
@@ -14,7 +14,6 @@ df_discrete = pd.read_csv(RESULTS_DIR / "varying_eta_results_discrete.csv")
 df_continuous = pd.read_csv(RESULTS_DIR / "varying_eta_results_continuous.csv")
 
 
-# ---------- Budget ----------
 agg_c = df_continuous.groupby('precision')['budget'].agg(
     mean='mean',
     q05=lambda v: np.quantile(v, 0.05),
@@ -36,7 +35,7 @@ ax.fill_between(agg_d.index, agg_d['q05'], agg_d['q95'], alpha=0.2, color='tab:b
 
 # Reference line: 1/eta, anchored at the smallest precision (right side after invert)
 eta_values = np.array(sorted(agg_d.index))
-ref_constant = 2.5*10**2  # anchor at smallest eta
+ref_constant = 2.5*10**2
 ax.plot(eta_values, ref_constant / eta_values,
         linestyle=':', color='orange', label=r'$\propto 1/\eta$')
 
@@ -45,7 +44,6 @@ ax.set_ylabel('Mean budget')
 ax.set_xscale('log', base=2)
 ax.set_yscale('log')
 ax.invert_xaxis()  # finer precision (smaller eta) on the right
-#ax.set_title('Varying precision: budget vs. precision')
 ax.legend()
 ax.grid(True, which='both', alpha=0.3)
 plt.tight_layout()

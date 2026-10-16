@@ -1,3 +1,8 @@
+"""
+Experiment 5 (Figure 4): ten change points with varying delta and eta.
+Compares LCP with MCPI. Output: two CSVs for later plot creation.
+"""
+
 from multiprocessing import Pool
 import numpy as np
 import pandas as pd
@@ -16,7 +21,7 @@ RESULTS_DIR = Path(__file__).resolve().parent.parent / "results_continuous"
 num_mc = 100
 num_cp = 10
 s = 0.25 / num_cp
-max_precision = 0.1 * s
+base_precision = 0.1 * s
 num_precision_iterations = 3
 jump_size = 1
 delta_explore = 1
@@ -45,7 +50,7 @@ def many_change_points(i):
     continuous_rows = []
 
     for power in range(num_precision_iterations):
-        precision = max_precision / (2*(2 ** power))
+        precision = base_precision / 2 ** (power + 1)
 
         for delta in delta_values:
             # --- Continuous ---

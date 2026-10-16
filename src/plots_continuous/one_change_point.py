@@ -1,6 +1,6 @@
 """
-Plot mean budget and deviation against log(1/delta) for the one-change-point
-experiment, comparing discrete (CPI) and continuous methods.
+Figure 3: plot mean budget against log(1/delta) for the one-change-point
+experiment, comparing LCP with SCPI.
 """
 
 from pathlib import Path
@@ -22,7 +22,6 @@ def aggregate(df, x):
     ), df.groupby(x)['deviation'].mean()
 
 
-# ---------- Budget ----------
 fig, ax = plt.subplots(figsize=(5, 3))
 agg_d, _ = aggregate(df_discrete, 'log_inv_delta')
 agg_c, _ = aggregate(df_continuous, 'log_inv_delta')
@@ -32,16 +31,11 @@ agg_c, _ = aggregate(df_continuous, 'log_inv_delta')
 ax.plot(agg_c.index, agg_c['mean'], marker='s', label='LCP', color='tab:red')
 ax.fill_between(agg_c.index, agg_c['q05'], agg_c['q95'], alpha=0.2, color='tab:red')
 
-ax.plot(agg_d.index, agg_d['mean'], marker='o', label='MCPI', color='tab:blue')
+ax.plot(agg_d.index, agg_d['mean'], marker='o', label='SCPI', color='tab:blue')
 ax.fill_between(agg_d.index, agg_d['q05'], agg_d['q95'], alpha=0.2, color='tab:blue')
-
-det_c = df_continuous.groupby('log_inv_delta')['detection_budget'].mean()
-#ax.plot(det_c.index, det_c.values, marker='^', linestyle='--',
-#        label='LCPI (DI only)', color='tab:red', alpha=0.7)
 
 ax.set_xlabel(r'$\log(1/\delta)$')
 ax.set_ylabel('Mean budget')
-#ax.set_title('One change point: budget vs. confidence level')
 ax.legend()
 ax.grid(True, which='both', alpha=0.3)
 plt.tight_layout()

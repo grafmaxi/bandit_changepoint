@@ -1,11 +1,25 @@
+"""
+CSCPI: earlier single change point method that repeats SHB with a verification test and doubling budget.
+"""
+
 from src.algorithms.sequential_halving_with_backtracking import shb
-import numpy as np # type: ignore
+import numpy as np
 
 def cscpi(
         bandit,
         confidence: float,
         precision: float
 ):
+    """Localize a single change point to the given precision with the given confidence.
+
+    Args:
+        bandit: Continuous_Bandit to sample from.
+        confidence: Confidence parameter.
+        precision: Target precision eta.
+
+    Returns:
+        Estimated change point and the budget spent.
+    """
     tracked_budget = 0
     cpfound = False
     iteration_budget = int(60*np.log(1/(2*precision)))

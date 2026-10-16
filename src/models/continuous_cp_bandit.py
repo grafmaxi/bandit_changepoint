@@ -1,7 +1,10 @@
+"""
+Continuous piecewise-constant bandit on [0, 1], the setting of the paper.
+"""
+
 from typing import List, Optional, Union
-import numpy as np # type: ignore
+import numpy as np
 from numpy.typing import NDArray
-from .bandit import Bandit
 
 class Continuous_Bandit:
     def __init__(
@@ -11,10 +14,11 @@ class Continuous_Bandit:
             sampling_type: Optional[str] = "gaussian",
             parameter: Optional[float] = 1.0
     ) -> None:
-        """ Initialize a basic bandit.
+        """Initialize a piecewise-constant bandit on [0, 1].
 
         Args:
-            arms: List of arm means.
+            change_points: Change point positions in (0, 1), strictly increasing.
+            values: Function value on each section, one more than change points.
             sampling_type: distribution from which to sample (gaussian or bernoulli).
             parameter: standard deviation for gaussian, ignored for bernoulli.
         """
@@ -35,17 +39,8 @@ class Continuous_Bandit:
             raise ValueError(f"Unsupported sampling type: {self.sampling_type}")
         if sampling_type == "gaussian" and (parameter is None or parameter <= 0):
             raise ValueError("Parameter must be a positive float for gaussian sampling.")
-        if sampling_type == "bernoulli" and (any(arm < 0 or arm > 1 for arm in arms)):
+        if sampling_type == "bernoulli" and (any(arm < 0 or arm > 1 for arm in values)):
             raise ValueError("All arm means must be in [0, 1] for bernoulli sampling.")
-        
-    def discrete_transform(
-            self,
-            precision: float
-            ):
-        num_arms = int(1 / precision)
-        arms = range(num_arms)
-        arm_means = [self.value_at(x * precision) for x in arms]
-        return Bandit(arms = arm_means , sampling_type = self.sampling_type, parameter = self.parameter)
 
     def value_at(self, x: float) -> float:
         """Get the value of the bandit at position x based on change points."""
@@ -55,18 +50,18 @@ class Continuous_Bandit:
         return self.values[-1]
 
     def pull(self, x: float, ntimes: Optional[int] = 1) -> Union[float, NDArray[np.float64]]:
-        """Sample rewards from arm i according to the specified distribution.
-        
+        """Sample rewards at position x according to the specified distribution.
+
         Args:
-            i: Index of the arm to pull (0 <= i < num_arms)
+            x: Position to query (0 <= x <= 1)
             ntimes: Number of independent samples to draw (default: 1)
-            
+
         Returns:
             float: Single sampled reward if ntimes=1
-            List[float]: List of sampled rewards if ntimes>1
-            
+            NDArray: Array of sampled rewards if ntimes>1
+
         Raises:
-            ValueError: If i is out of bounds or ntimes < 1
+            ValueError: If x is outside [0, 1] or ntimes < 1
         """
         if not 0 <= x <= 1:
             raise ValueError(f"Arm must be between 0 and 1")

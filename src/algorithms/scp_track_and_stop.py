@@ -1,11 +1,21 @@
+"""
+SCPI: Track-and-Stop for a single change point on a discrete bandit (Lazzaro and Pike-Burke, 2025a).
+"""
+
 from src.models.cp_bandit import CPBandit
-import numpy as np # type: ignore
-
-
-
+import numpy as np
 
 
 def scp_track_and_stop(bandit: CPBandit, delta: float):
+    """Identify the change point of a discrete bandit with a single change point.
+
+    Args:
+        bandit: CPBandit to sample from.
+        delta: Confidence parameter.
+
+    Returns:
+        Index of the identified change point (last arm before the jump) and the number of pulls.
+    """
     arms = bandit.arms
     num_arms = bandit.num_arms
     sum_vec = np.zeros(num_arms)
@@ -58,4 +68,4 @@ def scp_track_and_stop(bandit: CPBandit, delta: float):
         xhat = np.argmax(diff_vec)
         z = (num_vec[xhat] * num_vec[xhat+1]) / (2*(num_vec[xhat] + num_vec[xhat+1])) * (mean_vec[xhat] - mean_vec[xhat+1])**2
         beta = np.log( t* gamma * (num_arms-1) / delta ) + 8 * np.log(np.log(t*gamma*(num_arms-1)/delta))
-    return xhat, t  # return estimated change point and total pulls used
+    return xhat, t

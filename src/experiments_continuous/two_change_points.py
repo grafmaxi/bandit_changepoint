@@ -1,7 +1,6 @@
 """
-Monte-Carlo experiment: two change points, discrete vs. continuous.
-Parallelized over 4 cores, varying gap size (k).
-Output: two CSVs for later plot creation.
+Experiment 1 (Figure 1): two change points with varying plateau size s.
+Compares LCP with MCPI. Output: two CSVs for later plot creation.
 """
 
 from multiprocessing import Pool
@@ -31,7 +30,7 @@ num_workers = 4
 
 # ---------- Worker ----------
 def two_change_points(i):
-    """Run all s values for a single MC run (discrete + continuous)."""
+    """Run all s values for a single MC run (continuous + discrete)."""
     np.random.seed(i)
     continuous_left_pos = np.random.uniform(0, 0.5)
 

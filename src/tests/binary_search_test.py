@@ -1,8 +1,11 @@
+"""
+Smoke test for CPBandit.bin_search: prints results without checking them.
+"""
+
 import numpy as np
 from src.models.cp_bandit import CPBandit
 
 def test_binary_search_multiple_scenarios():
-    # Define test scenarios
     scenarios = [
         {"means": [0, 1], "lengths": [9, 1], "name": "Positive jump, equal lengths"},
         {"means": [0, -1], "lengths": [5, 5], "name": "Negative jump, equal lengths"},
@@ -13,7 +16,6 @@ def test_binary_search_multiple_scenarios():
     budget = 100
     
     for scenario in scenarios:
-        # Create CPBandit
         bandit = CPBandit(
             sec_means=scenario["means"],
             sec_len=scenario["lengths"],
@@ -21,11 +23,9 @@ def test_binary_search_multiple_scenarios():
             parameter=0.1
         )
         
-        # Apply binary search
         estimated_cp = bandit.bin_search(budget)
-        true_cp = bandit.change_points[0]  # First changepoint
+        true_cp = bandit.change_points[0]
         
-        # Print results
         print(f"\nScenario: {scenario['name']}")
         print(f"True changepoint: {true_cp}")
         print(f"Estimated changepoint: {estimated_cp}")

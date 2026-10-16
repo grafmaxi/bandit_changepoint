@@ -1,7 +1,12 @@
-import numpy as np # type: ignore
+"""
+SHB (Algorithm 4 in the paper): sequential halving with backtracking from Lazzaro and Pike-Burke (2025b).
+"""
+
+import numpy as np
 from src.models.continuous_cp_bandit import Continuous_Bandit
 
 class tree_node:
+    """Search window: fixed boundaries plus the left, middle and right arm."""
     def __init__(self, left_boundary, l, m, r, right_boundary):
         self.left_boundary = left_boundary
         self.l = l
@@ -22,6 +27,18 @@ def shb(
         interval = (0, 1),
         track_budget = False
 ) :
+    """Localize a single change point inside an interval to the given precision.
+
+    Args:
+        bandit: Continuous_Bandit to sample from.
+        budget: Total sampling budget.
+        precision: Target precision eta.
+        interval: Interval (left, right) that contains the change point.
+        track_budget: Also return the budget spent.
+
+    Returns:
+        Estimated change point, and the budget spent if track_budget is True.
+    """
     left, right = interval
     if right - left <= 2*precision:
         if track_budget:

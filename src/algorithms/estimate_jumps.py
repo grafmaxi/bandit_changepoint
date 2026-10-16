@@ -1,6 +1,22 @@
-import numpy as np # type: ignore
+"""
+EstimateJumps (Algorithm 3 in the paper): adaptive estimation of the jump sizes on detected intervals.
+"""
+
+import numpy as np
 
 def estimate_jumps(bandit, intervals, delta, budget, num_cp):
+    """Estimate the jump size on candidate intervals until num_cp of them are accepted.
+
+    Args:
+        bandit: Continuous_Bandit to sample from.
+        intervals: Candidate intervals returned by detect_intervals.
+        delta: Confidence parameter.
+        budget: Total sampling budget.
+        num_cp: Number of accepted intervals after which to stop.
+
+    Returns:
+        Dict mapping each accepted interval to its estimated jump size, and the budget spent.
+    """
     estimates = {}
     good_estimates = {}
     tracked_budget = 0

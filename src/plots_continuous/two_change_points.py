@@ -1,6 +1,6 @@
 """
-Plot mean budget and deviation against plateau size s for the two-change-points
-experiment, comparing discrete (MCPI) and continuous methods.
+Figure 1: plot mean budget against plateau size s for the two-change-points
+experiment, comparing LCP with MCPI.
 """
 
 from pathlib import Path
@@ -36,15 +36,12 @@ ax.fill_between(agg_d.index, agg_d['q05'], agg_d['q95'], alpha=0.2, color='tab:b
 
 # Reference line: 1/s, scaled to match the data range
 s_values = np.array(sorted(agg_d.index))
-ref_constant = 4*10**3  # anchor at smallest s
+ref_constant = 4*10**3
 ax.plot(s_values, ref_constant / s_values,
         linestyle=':', color='orange', label=r'$\propto 1/s$')
 
 ax.set_xlabel(r'plateau size $s$')
 ax.set_ylabel('Mean budget')
-#ax.set_xscale('log', base=2)
-#ax.set_yscale('log')
-#ax.set_title('Two change points: budget vs. plateau size')
 ax.legend(loc = 'upper right')
 ax.grid(True, which='both', alpha=0.3)
 plt.rcParams.update({

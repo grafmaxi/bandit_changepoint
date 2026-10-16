@@ -1,5 +1,9 @@
+"""
+Finite-armed bandit with Gaussian or Bernoulli rewards.
+"""
+
 from typing import List, Optional, Union
-import numpy as np # type: ignore
+import numpy as np
 from numpy.typing import NDArray
 
 class Bandit:
@@ -9,7 +13,7 @@ class Bandit:
             sampling_type: Optional[str] = "gaussian",
             parameter: Optional[float] = 1.0
     ) -> None:
-        """ Initialize a basic bandit.
+        """Initialize a basic bandit.
 
         Args:
             arms: List of arm means.
@@ -38,7 +42,7 @@ class Bandit:
             
         Returns:
             float: Single sampled reward if ntimes=1
-            List[float]: List of sampled rewards if ntimes>1
+            NDArray: Array of sampled rewards if ntimes>1
             
         Raises:
             ValueError: If i is out of bounds or ntimes < 1

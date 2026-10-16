@@ -1,6 +1,20 @@
-import numpy as np # type: ignore
+"""
+DetectIntervals (Algorithm 1 in the paper): multiscale endpoint tests on dyadic grids.
+"""
+
+import numpy as np
 
 def detect_intervals(bandit, delta, budget):
+    """Detect disjoint intervals that each contain at least one change point.
+
+    Args:
+        bandit: Continuous_Bandit to sample from.
+        delta: Confidence parameter.
+        budget: Total sampling budget.
+
+    Returns:
+        List of detected intervals (left, right) and the budget spent.
+    """
     intervals = []
     tracked_budget = 0
     dmax = int(np.log(budget/np.log(1/delta))/np.log(2))
